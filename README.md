@@ -234,4 +234,4 @@ This lab is designed to run within **5 Cortex Code credits** per participant.
 
 ---
 
-*Lab Version: 1.0 | Last Updated: April 2026 | Author: RetailMax HOL Team*
+*Lab Version: 1.0 | Last Updated: April 2026 | Author: Omer Mizrach PSE*
