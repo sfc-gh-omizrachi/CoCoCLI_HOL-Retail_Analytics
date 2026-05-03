@@ -119,31 +119,42 @@ CREATE OR REPLACE TABLE PRODUCTS (
 );
 
 INSERT INTO PRODUCTS
-WITH cats AS (
-    SELECT  0 AS idx, 'Electronics'     AS cat, 'Smartphones' AS sub,  299.99 AS minp,  899.99 AS maxp, 120.00 AS minc, 500.00 AS maxc UNION ALL
-    SELECT  1,        'Electronics',            'Laptops',              599.99,          1499.99,         300.00,         900.00 UNION ALL
-    SELECT  2,        'Electronics',            'Headphones',            29.99,           249.99,          10.00,         100.00 UNION ALL
-    SELECT  3,        'Clothing',               'T-Shirts',               9.99,            49.99,           3.00,          15.00 UNION ALL
-    SELECT  4,        'Clothing',               'Jeans',                 29.99,           129.99,          12.00,          45.00 UNION ALL
-    SELECT  5,        'Clothing',               'Outerwear',             49.99,           299.99,          20.00,         120.00 UNION ALL
-    SELECT  6,        'Home & Garden',          'Furniture',             99.99,           999.99,          40.00,         400.00 UNION ALL
-    SELECT  7,        'Home & Garden',          'Kitchen',               19.99,           199.99,           8.00,          80.00 UNION ALL
-    SELECT  8,        'Sports',                 'Fitness',               24.99,           499.99,          10.00,         200.00 UNION ALL
-    SELECT  9,        'Sports',                 'Outdoor',               39.99,           399.99,          15.00,         160.00 UNION ALL
-    SELECT 10,        'Food & Beverage',        'Snacks',                 1.99,            19.99,           0.50,           6.00 UNION ALL
-    SELECT 11,        'Food & Beverage',        'Beverages',              2.49,            24.99,           0.80,           8.00
-),
-nums AS (SELECT SEQ4() + 1 AS n FROM TABLE(GENERATOR(ROWCOUNT => 500)))
+WITH nums AS (SELECT SEQ4() + 1 AS n FROM TABLE(GENERATOR(ROWCOUNT => 500)))
 SELECT
-    n.n AS product_id,
-    c.sub || ' Product ' || n.n AS product_name,
-    c.cat AS category,
-    c.sub AS subcategory,
-    ROUND(c.minp + (c.maxp - c.minp) * RANDOM(), 2) AS unit_price,
-    ROUND(c.minc + (c.maxc - c.minc) * RANDOM(), 2) AS cost,
-    'Brand ' || MOD(n.n, 20) AS brand
-FROM nums n
-JOIN cats c ON MOD(n.n - 1, 12) = c.idx;
+    n AS product_id,
+    CASE MOD(n-1, 12)
+        WHEN 0  THEN 'Smartphone'   WHEN 1  THEN 'Laptop'      WHEN 2  THEN 'Headphones'
+        WHEN 3  THEN 'T-Shirt'      WHEN 4  THEN 'Jeans'       WHEN 5  THEN 'Jacket'
+        WHEN 6  THEN 'Sofa'         WHEN 7  THEN 'Cookware Set' WHEN 8  THEN 'Dumbbells'
+        WHEN 9  THEN 'Tent'         WHEN 10 THEN 'Trail Mix'   ELSE    'Energy Drink'
+    END || ' #' || n AS product_name,
+    CASE MOD(n-1, 5)
+        WHEN 0 THEN 'Electronics' WHEN 1 THEN 'Clothing'
+        WHEN 2 THEN 'Home & Garden' WHEN 3 THEN 'Sports'
+        ELSE 'Food & Beverage'
+    END AS category,
+    CASE MOD(n-1, 12)
+        WHEN 0  THEN 'Smartphones'  WHEN 1  THEN 'Laptops'     WHEN 2  THEN 'Headphones'
+        WHEN 3  THEN 'T-Shirts'     WHEN 4  THEN 'Jeans'       WHEN 5  THEN 'Outerwear'
+        WHEN 6  THEN 'Furniture'    WHEN 7  THEN 'Kitchen'     WHEN 8  THEN 'Fitness'
+        WHEN 9  THEN 'Outdoor'      WHEN 10 THEN 'Snacks'      ELSE    'Beverages'
+    END AS subcategory,
+    CASE MOD(n-1, 5)
+        WHEN 0 THEN ROUND(29.99  + UNIFORM(0, 1470, RANDOM()), 2)
+        WHEN 1 THEN ROUND(9.99   + UNIFORM(0,  290, RANDOM()), 2)
+        WHEN 2 THEN ROUND(19.99  + UNIFORM(0,  980, RANDOM()), 2)
+        WHEN 3 THEN ROUND(24.99  + UNIFORM(0,  475, RANDOM()), 2)
+        ELSE        ROUND(1.99   + UNIFORM(0,   23, RANDOM()), 2)
+    END AS unit_price,
+    CASE MOD(n-1, 5)
+        WHEN 0 THEN ROUND(10.00 + UNIFORM(0, 490, RANDOM()), 2)
+        WHEN 1 THEN ROUND(3.00  + UNIFORM(0, 117, RANDOM()), 2)
+        WHEN 2 THEN ROUND(8.00  + UNIFORM(0, 392, RANDOM()), 2)
+        WHEN 3 THEN ROUND(10.00 + UNIFORM(0, 190, RANDOM()), 2)
+        ELSE        ROUND(0.50  + UNIFORM(0,   7, RANDOM()), 2)
+    END AS cost,
+    'Brand ' || MOD(n, 20) AS brand
+FROM nums;
 
 -- ============================================================
 -- TABLE 3: CUSTOMERS
