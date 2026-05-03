@@ -216,7 +216,7 @@ SELECT
     UNIFORM(1, 150, RANDOM()) AS store_id,
     UNIFORM(1, 50000, RANDOM()) AS customer_id,
     DATEADD(day, -UNIFORM(0, 730, RANDOM()), CURRENT_DATE()) AS transaction_date,
-    TIMEADD(second, UNIFORM(28800, 75600, RANDOM()), '00:00:00') AS transaction_time,
+    TIMEADD(second, UNIFORM(28800, 75600, RANDOM()), '00:00:00'::TIME) AS transaction_time,
     CASE MOD(n, 4)
         WHEN 0 THEN 'Credit Card'
         WHEN 1 THEN 'Debit Card'
