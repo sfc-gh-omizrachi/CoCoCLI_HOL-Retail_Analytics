@@ -119,24 +119,19 @@ CREATE OR REPLACE TABLE PRODUCTS (
 );
 
 INSERT INTO PRODUCTS
-WITH cats_raw AS (
-    SELECT 'Electronics'    AS cat, 'Smartphones'    AS sub, 299.99  AS minp, 899.99  AS maxp, 120.00 AS minc, 500.00 AS maxc UNION ALL
-    SELECT 'Electronics',          'Laptops',                 599.99,          1499.99,          300.00,          900.00 UNION ALL
-    SELECT 'Electronics',          'Headphones',              29.99,            249.99,           10.00,           100.00 UNION ALL
-    SELECT 'Clothing',             'T-Shirts',                9.99,             49.99,            3.00,            15.00 UNION ALL
-    SELECT 'Clothing',             'Jeans',                   29.99,            129.99,           12.00,           45.00 UNION ALL
-    SELECT 'Clothing',             'Outerwear',               49.99,            299.99,           20.00,           120.00 UNION ALL
-    SELECT 'Home & Garden',        'Furniture',               99.99,            999.99,           40.00,           400.00 UNION ALL
-    SELECT 'Home & Garden',        'Kitchen',                 19.99,            199.99,            8.00,            80.00 UNION ALL
-    SELECT 'Sports',               'Fitness',                 24.99,            499.99,            10.00,           200.00 UNION ALL
-    SELECT 'Sports',               'Outdoor',                 39.99,            399.99,            15.00,           160.00 UNION ALL
-    SELECT 'Food & Beverage',      'Snacks',                  1.99,             19.99,             0.50,            6.00 UNION ALL
-    SELECT 'Food & Beverage',      'Beverages',               2.49,             24.99,             0.80,            8.00
-),
-cats AS (
-    SELECT ROW_NUMBER() OVER (ORDER BY cat, sub) - 1 AS cat_idx,
-           cat, sub, minp, maxp, minc, maxc
-    FROM cats_raw
+WITH cats AS (
+    SELECT  0 AS idx, 'Electronics'     AS cat, 'Smartphones' AS sub,  299.99 AS minp,  899.99 AS maxp, 120.00 AS minc, 500.00 AS maxc UNION ALL
+    SELECT  1,        'Electronics',            'Laptops',              599.99,          1499.99,         300.00,         900.00 UNION ALL
+    SELECT  2,        'Electronics',            'Headphones',            29.99,           249.99,          10.00,         100.00 UNION ALL
+    SELECT  3,        'Clothing',               'T-Shirts',               9.99,            49.99,           3.00,          15.00 UNION ALL
+    SELECT  4,        'Clothing',               'Jeans',                 29.99,           129.99,          12.00,          45.00 UNION ALL
+    SELECT  5,        'Clothing',               'Outerwear',             49.99,           299.99,          20.00,         120.00 UNION ALL
+    SELECT  6,        'Home & Garden',          'Furniture',             99.99,           999.99,          40.00,         400.00 UNION ALL
+    SELECT  7,        'Home & Garden',          'Kitchen',               19.99,           199.99,           8.00,          80.00 UNION ALL
+    SELECT  8,        'Sports',                 'Fitness',               24.99,           499.99,          10.00,         200.00 UNION ALL
+    SELECT  9,        'Sports',                 'Outdoor',               39.99,           399.99,          15.00,         160.00 UNION ALL
+    SELECT 10,        'Food & Beverage',        'Snacks',                 1.99,            19.99,           0.50,           6.00 UNION ALL
+    SELECT 11,        'Food & Beverage',        'Beverages',              2.49,            24.99,           0.80,           8.00
 ),
 nums AS (SELECT SEQ4() + 1 AS n FROM TABLE(GENERATOR(ROWCOUNT => 500)))
 SELECT
@@ -148,7 +143,7 @@ SELECT
     ROUND(c.minc + (c.maxc - c.minc) * RANDOM(), 2) AS cost,
     'Brand ' || MOD(n.n, 20) AS brand
 FROM nums n
-JOIN cats c ON MOD(n.n - 1, 12) = c.cat_idx;
+JOIN cats c ON MOD(n.n - 1, 12) = c.idx;
 
 -- ============================================================
 -- TABLE 3: CUSTOMERS
