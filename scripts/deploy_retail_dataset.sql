@@ -232,19 +232,15 @@ CREATE OR REPLACE TABLE TRANSACTION_ITEMS (
 INSERT INTO TRANSACTION_ITEMS
 WITH nums AS (SELECT SEQ4() + 1 AS n FROM TABLE(GENERATOR(ROWCOUNT => 500000)))
 SELECT
-    n AS item_id,
-    UNIFORM(1, 200000, RANDOM()) AS transaction_id,
-    UNIFORM(1, 500, RANDOM()) AS product_id,
-    UNIFORM(1, 5, RANDOM()) AS quantity,
+    n.n                             AS item_id,
+    MOD(n.n, 200000) + 1           AS transaction_id,
+    MOD(n.n * 7, 500) + 1         AS product_id,
+    UNIFORM(1, 5, RANDOM())        AS quantity,
     p.unit_price,
-    CASE WHEN MOD(n, 10) = 0 THEN UNIFORM(5, 30, RANDOM()) ELSE 0 END AS discount_pct,
-    ROUND(
-        p.unit_price * UNIFORM(1, 5, RANDOM()) *
-        (1 - CASE WHEN MOD(n, 10) = 0 THEN UNIFORM(5, 30, RANDOM()) / 100.0 ELSE 0 END),
-        2
-    ) AS line_total
-FROM nums
-JOIN PRODUCTS p ON UNIFORM(1, 500, RANDOM()) = p.product_id;
+    CASE WHEN MOD(n.n, 10) = 0 THEN UNIFORM(5, 30, RANDOM()) ELSE 0 END AS discount_pct,
+    ROUND(p.unit_price * UNIFORM(1, 5, RANDOM()), 2) AS line_total
+FROM nums n
+JOIN PRODUCTS p ON MOD(n.n * 7, 500) + 1 = p.product_id;
 
 -- Update transaction totals
 UPDATE TRANSACTIONS t
