@@ -263,7 +263,7 @@ SET total_amount = (
 -- ============================================================
 -- Verify deployment
 -- ============================================================
-SELECT 'STORES' AS tbl, COUNT(*) AS rows FROM STORES UNION ALL
+SELECT 'STORES' AS tbl, COUNT(*) AS row_count FROM STORES UNION ALL
 SELECT 'PRODUCTS',      COUNT(*) FROM PRODUCTS UNION ALL
 SELECT 'CUSTOMERS',     COUNT(*) FROM CUSTOMERS UNION ALL
 SELECT 'TRANSACTIONS',  COUNT(*) FROM TRANSACTIONS UNION ALL
