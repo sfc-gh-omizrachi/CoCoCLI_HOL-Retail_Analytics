@@ -139,8 +139,8 @@ SELECT
     c.sub || ' Product ' || n.n AS product_name,
     c.cat AS category,
     c.sub AS subcategory,
-    ROUND(UNIFORM(c.minp::FLOAT, c.maxp::FLOAT, RANDOM()), 2) AS unit_price,
-    ROUND(UNIFORM(c.minc::FLOAT, c.maxc::FLOAT, RANDOM()), 2) AS cost,
+    ROUND(c.minp + (c.maxp - c.minp) * RANDOM(), 2) AS unit_price,
+    ROUND(c.minc + (c.maxc - c.minc) * RANDOM(), 2) AS cost,
     'Brand ' || MOD(n.n, 20) AS brand
 FROM nums n
 JOIN cats c ON MOD(n.n, 12) = MOD(ROW_NUMBER() OVER (ORDER BY c.cat, c.sub), 12);
