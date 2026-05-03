@@ -119,7 +119,7 @@ CREATE OR REPLACE TABLE PRODUCTS (
 );
 
 INSERT INTO PRODUCTS
-WITH cats AS (
+WITH cats_raw AS (
     SELECT 'Electronics'    AS cat, 'Smartphones'    AS sub, 299.99  AS minp, 899.99  AS maxp, 120.00 AS minc, 500.00 AS maxc UNION ALL
     SELECT 'Electronics',          'Laptops',                 599.99,          1499.99,          300.00,          900.00 UNION ALL
     SELECT 'Electronics',          'Headphones',              29.99,            249.99,           10.00,           100.00 UNION ALL
@@ -133,6 +133,11 @@ WITH cats AS (
     SELECT 'Food & Beverage',      'Snacks',                  1.99,             19.99,             0.50,            6.00 UNION ALL
     SELECT 'Food & Beverage',      'Beverages',               2.49,             24.99,             0.80,            8.00
 ),
+cats AS (
+    SELECT ROW_NUMBER() OVER (ORDER BY cat, sub) - 1 AS cat_idx,
+           cat, sub, minp, maxp, minc, maxc
+    FROM cats_raw
+),
 nums AS (SELECT SEQ4() + 1 AS n FROM TABLE(GENERATOR(ROWCOUNT => 500)))
 SELECT
     n.n AS product_id,
@@ -143,7 +148,7 @@ SELECT
     ROUND(c.minc + (c.maxc - c.minc) * RANDOM(), 2) AS cost,
     'Brand ' || MOD(n.n, 20) AS brand
 FROM nums n
-JOIN cats c ON MOD(n.n, 12) = MOD(ROW_NUMBER() OVER (ORDER BY c.cat, c.sub), 12);
+JOIN cats c ON MOD(n.n - 1, 12) = c.cat_idx;
 
 -- ============================================================
 -- TABLE 3: CUSTOMERS
